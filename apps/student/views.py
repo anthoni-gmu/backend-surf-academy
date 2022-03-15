@@ -8,6 +8,7 @@ from .serializers import StudentSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
+
 class GetStudentsView(generics.ListAPIView):
     serializer_class = StudentSerializer
     pagination_class = PageNumberPagination
@@ -22,24 +23,20 @@ class GetStudentsView(generics.ListAPIView):
 
 
 class AddStudentView(generics.CreateAPIView):
+
     serializer_class = StudentSerializer
     pagination_class = PageNumberPagination
+
     def post(self, request, format=None):
         data = self.request.data
-        
-        try: 
-            print(data)
-            for i in data:
-                print(i)
+        try:
+
             first_name = data['first_name']
             last_name = data['last_name']
             email = data['email']
             phone = data['phone']
             dni = data['dni']
-            
-            print(dni)
-            print(dni)
-            
+
             if Student.objects.filter(dni__iexact=dni).exists():
                 return Response(
                     {'dni': 'existing DNI'},
@@ -51,7 +48,7 @@ class AddStudentView(generics.CreateAPIView):
                     {'email': 'existing email'},
                     status=status.HTTP_404_NOT_FOUND
                 )
-                
+
             try:
                 Student.objects.create(
                     first_name=first_name,
@@ -64,7 +61,6 @@ class AddStudentView(generics.CreateAPIView):
                 page = self.paginate_queryset(students)
                 if students and page is not None:
                     return self.get_paginated_response(self.serializer_class(students, many=True).data)
-            
             except:
                 return Response(
                     {'error': 'Error create student'},
@@ -72,6 +68,85 @@ class AddStudentView(generics.CreateAPIView):
                 )
         except:
             return Response(
-                    {'error': 'Error create studentadsa'},
+                {'error': 'Error create studentadsa'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class UpdateStudentView(generics.UpdateAPIView):
+    serializer_class = StudentSerializer
+    pagination_class = PageNumberPagination
+
+    def put(self, request, format=None):
+        data = self.request.data
+
+        try:
+
+            email = data['email']
+            phone = int(data['phone'])
+            dni = data['dni']
+
+            Student.objects.filter(dni=dni).update(
+                phone=phone,
+                email=email,
+            )
+
+            try:
+
+                students = Student.objects.all()
+                page = self.paginate_queryset(students)
+                if students and page is not None:
+                    return self.get_paginated_response(self.serializer_class(students, many=True).data)
+
+            except:
+                return Response(
+                    {'error': 'Error create student'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+        except:
+            return Response(
+                {'error': 'Something went wrong when updating student'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class DeleteStudentView(generics.DestroyAPIView):
+    print("hola")
+    
+    serializer_class = StudentSerializer
+    pagination_class = PageNumberPagination
+
+    def destroy(self, request, format=None):
+        data = self.request.data
+        dni = data['dni']
+
+        try:
+            student = Student.objects.get(dni=dni)
+            if not student:
+                return Response(
+                    {'error': 'This product is not in your wishlist'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            Student.objects.filter(
+                dni=dni,
+            ).delete()
+
+            try:
+
+                students = Student.objects.all()
+                page = self.paginate_queryset(students)
+                if students and page is not None:
+                    return self.get_paginated_response(self.serializer_class(students, many=True).data)
+
+            except:
+
+                return Response(
+                    {'error': 'Product ID must be an integer'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        except:
+            return Response(
+                {'error': 'Error create student'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
