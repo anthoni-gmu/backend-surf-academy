@@ -111,8 +111,8 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3000',
 
-    'https://frontend-paideia.herokuapp.com',
-    'https://backend-paideia.herokuapp.com'
+    'https://frontend-surf-academy.herokuapp.com',
+    'https://backend-surf-academy.herokuapp.com'
 ]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
@@ -121,8 +121,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3000',
 
-    'https://frontend-paideia.herokuapp.com',
-    'https://backend-paideia.herokuapp.com'
+    'https://frontend-surf-academy.herokuapp.com',
+    'https://backend-surf-academy.herokuapp.com'
 ]
 
 PASSWORD_HASHERS = [
@@ -131,8 +131,6 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
-
-
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -149,7 +147,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 
 LANGUAGE_CODE = 'en-us'
