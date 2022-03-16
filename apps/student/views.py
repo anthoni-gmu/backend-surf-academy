@@ -162,20 +162,9 @@ class SearhStudentView(generics.ListAPIView):
 
         try:
             search = data['search']
-            student = data['student']
-            ex_student = data['ex_student']
-            status=student
-            
-            print(type(ex_student))
-            print(ex_student)
 
             try:
-                if (ex_student):
-                    students = Student.objects.filter(status=student)
-                elif(student):
-                    students = Student.objects.filter(status=student)
-                else:
-                    students = Student.objects.all()
+                students = Student.objects.all()
 
                 students = students.filter(Q(first_name__icontains=search) | Q(
                     last_name__icontains=search) | Q(dni__icontains=search))
