@@ -7,6 +7,7 @@ from .models import Student
 from .serializers import StudentSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 
 
 class GetStudentsView(generics.ListAPIView):
@@ -111,8 +112,7 @@ class UpdateStudentView(generics.UpdateAPIView):
 
 
 class DeleteStudentView(generics.DestroyAPIView):
-    print("hola")
-    
+
     serializer_class = StudentSerializer
     pagination_class = PageNumberPagination
 
@@ -134,6 +134,40 @@ class DeleteStudentView(generics.DestroyAPIView):
             try:
 
                 students = Student.objects.all()
+                page = self.paginate_queryset(students)
+                if students and page is not None:
+                    return self.get_paginated_response(self.serializer_class(students, many=True).data)
+
+            except:
+
+                return Response(
+                    {'error': 'Product ID must be an integer'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        except:
+            return Response(
+                {'error': 'Error create student'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class SearhStudentView(generics.ListAPIView):
+    serializer_class = StudentSerializer
+    pagination_class = PageNumberPagination
+
+    def post(self, request, format=None):
+        data = self.request.data
+        print(data)
+
+        try:
+            search = data['search']
+
+            try:
+                students = Student.objects.all()
+
+                students = students.filter(Q(first_name__icontains=search) | Q(
+                    last_name__icontains=search) | Q(dni__icontains=search))
                 page = self.paginate_queryset(students)
                 if students and page is not None:
                     return self.get_paginated_response(self.serializer_class(students, many=True).data)
